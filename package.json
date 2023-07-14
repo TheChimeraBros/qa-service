@@ -15,6 +15,7 @@
   "homepage": "https://github.com/TheChimeraBros/qa-service#readme",
   "scripts": {
     "dev": "nodemon ./server/app.js",
+    "setup:db": "node ./server/db/setup.js",
     "test": "jest",
     "lint": "eslinst ./"
   },

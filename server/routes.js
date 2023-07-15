@@ -1,28 +1,28 @@
-const { getQuestions } = require('./controllers');
+const controllers = require('./controllers');
 const router = require('express').Router();
 
 // Gets all questions for a product_id query param
-router.get('/questions', getQuestions);
+router.get('/questions', controllers.getQuestions);
 
 // Gets all answers for a question_id query param
-router.get('/answers', getAnswers);
+router.get('/answers', controllers.getAnswers);
 
 // Adds a question
-router.post('/questions', postQuestion);
+router.post('/questions', controllers.postQuestion);
 
 // Adds an answer for a question_id request param
-router.post('/questions/:question_id/answers', postAnswer);
+router.post('/questions/:question_id/answers', controllers.postAnswer);
 
 // Updates a question's helpful field
-router.put('/questions/:question_id/helpful', putHelpfulQuestion);
+router.put('/questions/:question_id/helpful', controllers.putQuestion);
 
 // Updates a question's reported field
-router.put('/questions/:question_id/report', putReportQuestion);
+router.put('/questions/:question_id/report', controllers.putQuestion);
 
 // Updates an answers's helpful field
-router.put('/answers/:answer_id/helpful', putHelpfulAnswer);
+router.put('/answers/:answer_id/helpful', controllers.putAnswer);
 
 // Updates an answers's reported field
-router.put('/answers/:answer_id/report', putReportAnswer);
+router.put('/answers/:answer_id/report', controllers.putAnswer);
 
 module.exports = router;

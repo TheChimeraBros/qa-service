@@ -11,8 +11,9 @@ app.use('/qa', routes);
 
 // Handles unknown endpoints
 app.all('*', (req, res) => {
+  var status = 404;
   console.log(status, req.url);
-  res.status(404).send();
+  res.status(status).send();
 });
 
 const PORT = process.env.PORT || 3001;

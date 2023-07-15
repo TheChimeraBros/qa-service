@@ -5,7 +5,7 @@ const router = require('express').Router();
 router.get('/questions', controllers.getQuestions);
 
 // Gets all answers for a question_id query param
-router.get('/answers', controllers.getAnswers);
+router.get('/questions/:question_id/answers', controllers.getAnswers);
 
 // Adds a question
 router.post('/questions', controllers.postQuestion);

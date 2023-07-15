@@ -27,7 +27,7 @@ module.exports = {
   },
 
   fetchPhotos: (answerId) => {
-    var queryString = 'SELECT * FROM photos WHERE product_id=$1';
+    var queryString = 'SELECT id, url FROM photos WHERE answer_id=$1';
     var queryArgs = [answerId];
     return query(queryString, queryArgs);
   },

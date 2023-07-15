@@ -1,4 +1,4 @@
-const { fetchQuestions, fetchAnswers, createQuestion, createAnswer, createPhoto, updateHelpfulQuestion, updateReportQuestion, updateHelpfulAnswer, updateReportAnswer } = require('../models');
+const { fetchQuestions, fetchAnswers, fetchPhotos, createQuestion, createAnswer, createPhoto, updateHelpfulQuestion, updateReportQuestion, updateHelpfulAnswer, updateReportAnswer } = require('../models');
 
 module.exports = {
 
@@ -9,10 +9,46 @@ module.exports = {
 
   getAnswers: (req, res) => {
 
+    var questionId = req.params.question_id;
+    var limit = parseInt(req.query.count || 5);
+    var offset = parseInt((req.query.page - 1 || 0) * limit);
 
+    var answersResponseObject = {
+      'question': questionId,
+      'page': req.query.page - 1,
+      'count': limit
+    };
 
-
-    res.end();
+    fetchAnswers(questionId, limit, offset)
+      .then((result) => {
+        answersResponseObject.results = result.rows;
+        return answersResponseObject;
+      })
+      .then((answersResponseObject) => {
+        return Promise.all(answersResponseObject.results.map((answer) => {
+          var answerId = answer.id;
+          return fetchPhotos(answerId)
+            .then((result) => {
+              answer.photos = result.rows;
+            });
+        }));
+          // .then((obj) => {
+          //   console.log('object', JSON.stringify(obj));
+          //   return obj;
+          // })
+          // .catch((error) => {
+          //   console.error('Error appending photos to answers', error);
+          //   res.status(500).end();
+          // });
+      })
+      .then(() => {
+        console.log(answersResponseObject);
+        res.status(200).send(answersResponseObject);
+      })
+      .catch((error) => {
+        console.error('Error fetching answers and photos:', error);
+        res.status(500).end();
+      });
   },
 
   postQuestion: (req, res) => {

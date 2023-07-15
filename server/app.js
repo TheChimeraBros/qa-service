@@ -1,3 +1,5 @@
+const instrument = require('@aspecto/opentelemetry');
+instrument({aspectoAuth: '55e99609-4dd1-41ae-9df3-09a6ad14b0cf'});
 require('dotenv').config();
 const express = require('express');
 const routes = require('./routes');

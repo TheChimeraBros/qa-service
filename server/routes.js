@@ -14,15 +14,15 @@ router.post('/questions', controllers.postQuestion);
 router.post('/questions/:question_id/answers', controllers.postAnswer);
 
 // Updates a question's helpful field
-router.put('/questions/:question_id/helpful', controllers.putQuestion);
+router.put('/questions/:question_id/helpful', controllers.putHelpfulQuestion);
 
 // Updates a question's reported field
-router.put('/questions/:question_id/report', controllers.putQuestion);
+router.put('/questions/:question_id/report', controllers.putReportQuestion);
 
 // Updates an answers's helpful field
-router.put('/answers/:answer_id/helpful', controllers.putAnswer);
+router.put('/answers/:answer_id/helpful', controllers.putHelpfulAnswer);
 
 // Updates an answers's reported field
-router.put('/answers/:answer_id/report', controllers.putAnswer);
+router.put('/answers/:answer_id/report', controllers.putReportAnswer);
 
 module.exports = router;

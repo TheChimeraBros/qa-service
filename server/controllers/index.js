@@ -1,28 +1,10 @@
-const { fetchQuestions, fetchAnswers, createQuestion, createAnswer, createPhoto, updateQuestion, updateAnswer } = require('../models');
+const { fetchQuestions, fetchAnswers, createQuestion, createAnswer, createPhoto, updateHelpfulQuestion, updateReportQuestion, updateHelpfulAnswer, updateReportAnswer } = require('../models');
 
 module.exports = {
 
   getQuestions: (req, res) => {
 
-    if (!req.query.product_id) {
-      console.log(req.params);
-      res.status(404).end();
-    }
 
-    var productId = req.query.product_id;
-    var limit = req.query.count || 5;
-    var offset = (req.query.page - 1 || 0) * limit;
-
-    fetchQuestions(productId, limit, offset)
-      .then((result) => {
-        // console.log(result.rows);
-        res.send(result.rows);
-        return result.rows;
-      })
-      .catch((error) => {
-        console.error('Error retrieving questions:', error);
-        res.status(400).end();
-      })
   },
 
   getAnswers: (req, res) => {
@@ -72,16 +54,50 @@ module.exports = {
       });
   },
 
-  putQuestion: (req, res) => {
-
-
-    res.end();
+  putHelpfulQuestion: (req, res) => {
+    updateHelpfulQuestion(req.params.question_id)
+      .then(() => {
+        res.status(204).end();
+      })
+      .catch((error) => {
+        console.error('Error updating question helpfulness:', error);
+        res.status(500).end();
+      });
   },
 
-  putAnswer: (req, res) => {
+  putReportQuestion: (req, res) => {
+    updateREportQuestion(req.params.question_id)
+      .then(() => {
+        res.status(204).end();
+      })
+      .catch((error) => {
+        console.error('Error reporting question:', error);
+        res.status(500).end();
+      });
+  },
 
+  putHelpfulAnswer: (req, res) => {
+    updateHelpfulAnswer(req.params.answer_id)
+      .then(() => {
+        res.status(204).end();
+      })
+      .catch((error) => {
+        console.error('Error updating answer helpfulness:', error);
+        res.status(500).end();
+      });
+  },
 
-    res.end();
+  putReportAnswer: (req, res) => {
+    updateReportAnswer(req.params.answer_id)
+      .then(() => {
+        res.status(204).end();
+      })
+      .catch((error) => {
+        console.error('Error reporting answer:', error);
+        res.status(500).end();
+      });
+
+    res.status(204).end();
   }
 
 };

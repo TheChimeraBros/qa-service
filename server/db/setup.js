@@ -17,8 +17,18 @@ db.connect()
     console.error('Error connecting to database', err);
   })
   .then(() => {
+    return db.query('DROP TABLE IF EXISTS photos');
+  })
+  .then(() => {
+    return db.query('DROP TABLE IF EXISTS answers');
+  })
+  .then(() => {
+    return db.query('DROP TABLE IF EXISTS questions');
+  })
+  .then(() => {
+    console.log('Creating & seeding "questions" table');
     return db.query(`
-      CREATE TABLE IF NOT EXISTS temp_questions (
+      CREATE TABLE temp_questions (
         id SERIAL PRIMARY KEY,
         body TEXT NOT NULL,
         date BIGINT,
@@ -35,7 +45,7 @@ db.connect()
   })
   .then(() => {
     return db.query(`
-      CREATE TABLE IF NOT EXISTS questions (
+      CREATE TABLE questions (
         id SERIAL PRIMARY KEY,
         body TEXT NOT NULL,
         date TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -64,14 +74,20 @@ db.connect()
     `);
   })
   .then(() => {
+    return db.query(`
+    SELECT setval(pg_get_serial_sequence('questions', 'id'), (SELECT MAX(id) FROM questions) + 1)
+    `);
+  })
+  .then(() => {
     console.log('Table "questions" created & seeded');
   })
   .catch((err) => {
     console.error('Error transfering from temp_questions to questions table', err);
   })
   .then(() => {
+    console.log('Creating & seeding "answers" table');
     return db.query(`
-      CREATE TABLE IF NOT EXISTS temp_answers (
+      CREATE TABLE temp_answers (
         id SERIAL PRIMARY KEY,
         body TEXT NOT NULL,
         date BIGINT,
@@ -89,7 +105,7 @@ db.connect()
   })
   .then(() => {
     return db.query(`
-      CREATE TABLE IF NOT EXISTS answers (
+      CREATE TABLE answers (
         id SERIAL PRIMARY KEY,
         body TEXT NOT NULL,
         date TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -119,14 +135,20 @@ db.connect()
     `);
   })
   .then(() => {
+    return db.query(`
+    SELECT setval(pg_get_serial_sequence('answers', 'id'), (SELECT MAX(id) FROM answers) + 1)
+    `);
+  })
+  .then(() => {
     console.log('Table "answers" created & seeded');
   })
   .catch((err) => {
     console.error('Error transfering from temp_answers to answers table', err);
   })
   .then(() => {
+    console.log('Creating & seeding "photos" table');
     return db.query(`
-      CREATE TABLE IF NOT EXISTS photos (
+      CREATE TABLE photos (
         id SERIAL PRIMARY KEY,
         url TEXT NOT NULL,
         answer_id INT NOT NULL,
@@ -140,6 +162,11 @@ db.connect()
   .then(() => {
     return db.query(`
       COPY photos (id, answer_id, url) FROM '${process.env.PHOTOS_PATH}' WITH DELIMITER ',' CSV HEADER
+    `);
+  })
+  .then(() => {
+    return db.query(`
+    SELECT setval(pg_get_serial_sequence('photos', 'id'), (SELECT MAX(id) FROM photos) + 1)
     `);
   })
   .then(() => {

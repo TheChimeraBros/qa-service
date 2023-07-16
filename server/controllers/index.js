@@ -4,18 +4,72 @@ module.exports = {
 
   getQuestions: (req, res) => {
 
+    if (!req.query.product_id) {
+      console.log(req.params);
+      res.status(404).end();
+    } else {
+      var productId = req.query.product_id;
+      var limit = parseInt(req.query.count) || 5;
+      var offset = (parseInt(req.query.page) - 1 || 0) * limit;
 
+      var questionsResponseObject = {
+        'product': productId,
+        'page': req.query.page - 1 || 0,
+        'count': limit
+      };
+
+      console.log('fetching questions');
+      fetchQuestions(productId, limit, offset)
+        .then((data) => {
+          questionsResponseObject.results = data.rows;
+          return questionsResponseObject;
+        })
+        .then((questionsResponseObject) => {
+          return Promise.all(questionsResponseObject.results.map((question) => {
+            question.answers = {};
+            var questionId = question.question_id;
+            return fetchAnswers(questionId, 999, 0)
+              .then((data) => {
+                return Promise.all(data.rows.map((answer) => {
+                  var answerId = answer.id;
+                  return fetchPhotos(answerId)
+                    .then((data) => {
+                      answer.photos = data.rows;
+                      question.answers[answer.id] = answer;
+                    });
+                }));
+              })
+              .catch((error) => {
+                console.error('Error fetching answers');
+                res.status(500).end();
+              });
+          }))
+            .then((something) => console.log('something:', something))
+            .catch((error) => {
+              console.error('Errow with something, I guess:', error);
+              res.status(500).end();
+            });
+        })
+        .then((something) => {
+          console.log(something);
+          res.status(200).send(questionsResponseObject);
+        })
+        .catch((error) => {
+          console.error('Error fetching questions, answers, and photos:', error);
+          res.status(500).end();
+        });
+    }
   },
 
   getAnswers: (req, res) => {
 
     var questionId = req.params.question_id;
-    var limit = parseInt(req.query.count || 5);
-    var offset = parseInt((req.query.page - 1 || 0) * limit);
+    var limit = parseInt(req.query.count) || 5;
+    var offset = (parseInt(req.query.page) - 1 || 0) * limit;
 
     var answersResponseObject = {
       'question': questionId,
-      'page': req.query.page - 1,
+      'page': req.query.page - 1 || 0,
       'count': limit
     };
 
@@ -32,14 +86,6 @@ module.exports = {
               answer.photos = result.rows;
             });
         }));
-          // .then((obj) => {
-          //   console.log('object', JSON.stringify(obj));
-          //   return obj;
-          // })
-          // .catch((error) => {
-          //   console.error('Error appending photos to answers', error);
-          //   res.status(500).end();
-          // });
       })
       .then(() => {
         console.log(answersResponseObject);

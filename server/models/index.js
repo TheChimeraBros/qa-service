@@ -1,10 +1,7 @@
 const db = require('../db');
 
 const query = (queryString, queryArgs) => {
-  return db.connect()
-    .then(() => {
-      return db.query(queryString, queryArgs);
-    })
+  return db.query(queryString, queryArgs)
     .then((res) => {
       // console.log(res.rows);
       return res;
@@ -15,7 +12,7 @@ const query = (queryString, queryArgs) => {
 module.exports = {
 
   fetchQuestions: (productId, limit, offset) => {
-    var queryString = 'SELECT id AS question_id, body AS question_body, date, asker_name, helpfulness AS question_helpfulness, reported FROM questions WHERE product_id=$1 LIMIT $2 OFFSET $3';
+    var queryString = 'SELECT id AS question_id, body AS question_body, date, asker_name, helpfulness AS question_helpfulness, reported FROM questions WHERE product_id=$1 AND reported=false LIMIT $2 OFFSET $3';
     var queryArgs = [productId, limit, offset];
     return query(queryString, queryArgs);
   },

@@ -17,6 +17,12 @@ db.connect()
     console.error('Error connecting to database', err);
   })
   .then(() => {
+    return db.query('DROP TABLE IF EXISTS temp_answers');
+  })
+  .then(() => {
+    return db.query('DROP TABLE IF EXISTS temp_questions');
+  })
+  .then(() => {
     return db.query('DROP TABLE IF EXISTS photos');
   })
   .then(() => {
@@ -56,6 +62,9 @@ db.connect()
         product_id INT NOT NULL
       )
     `);
+  })
+  .then(() => {
+    return db.query('CREATE INDEX questions_product_id_idx ON questions (product_id)');
   })
   .catch((err) => {
     console.error('Error creating questions table', err);
@@ -118,6 +127,9 @@ db.connect()
       )
     `);
   })
+  .then(() => {
+    return db.query('CREATE INDEX answers_question_id_idx ON answers (question_id)');
+  })
   .catch((err) => {
     console.error('Error creating answers table', err);
   })
@@ -155,6 +167,9 @@ db.connect()
         FOREIGN KEY (answer_id) REFERENCES answers(id)
       )
     `);
+  })
+  .then(() => {
+    return db.query('CREATE INDEX photos_answer_id_idx ON photos (answer_id)');
   })
   .catch((err) => {
     console.error('Error creating photos table', err);

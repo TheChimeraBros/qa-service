@@ -116,22 +116,24 @@ module.exports = {
         email: req.body.email
       };
 
+
       var photoUrls = req.body.photos || [];
 
-    createAnswer(data)
-      .then((result) => {
-        var answerId = result.rows[0].id;
-        return Promise.all(photoUrls.map((photoUrl) => {
-          return createPhoto(answerId, photoUrl);
-        }));
-      })
-      .then(() => {
-        res.status(201).end();
-      })
-      .catch((error) => {
-        console.error('Error creating answer and photos:', error);
-        res.status(500).end();
-      });
+      createAnswer(data)
+        .then((result) => {
+          var answerId = result.rows[0].id;
+          return Promise.all(photoUrls.map((photoUrl) => {
+            return createPhoto(answerId, photoUrl);
+          }));
+        })
+        .then(() => {
+          res.status(201).end();
+        })
+        .catch((error) => {
+          console.error('Error creating answer and photos:', error);
+          res.status(500).end();
+        });
+    }
   },
 
   putHelpfulQuestion: (req, res) => {

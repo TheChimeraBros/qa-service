@@ -98,88 +98,109 @@ module.exports = {
   },
 
   postQuestion: (req, res) => {
-    createQuestion(req.body)
-      .then((result) => {
-        res.status(201).end();
-      })
-      .catch((error) => {
-        console.error('Error creating question:', error);
-        res.status(400).end();
-      });
+    if (!req.body.body || !req.body.name || !req.body.email || !req.body.product_id) {
+      res.status(400).end();
+    } else {
+      createQuestion(req.body)
+        .then((result) => {
+          res.status(201).end();
+        })
+        .catch((error) => {
+          console.error('Error creating question:', error);
+          res.status(500).end();
+        });
+    }
   },
 
   postAnswer: (req, res) => {
 
-    var data = {
-      question_id: req.params.question_id,
-      body: req.body.body,
-      name: req.body.name,
-      email: req.body.email
-    };
+    if (!req.body.body || !req.body.name || !req.body.email || !req.params.question_id || isNaN(parseInt(req.params.question_id))) {
+      res.status(400).end();
+    } else {
+      var data = {
+        question_id: req.params.question_id,
+        body: req.body.body,
+        name: req.body.name,
+        email: req.body.email
+      };
 
-    var photoUrls = req.body.photos;
+      var photoUrls = req.body.photos || [];
 
-    createAnswer(data)
-      .then((result) => {
-        var answerId = result.rows[0].id;
-        return Promise.all(photoUrls.map((photoUrl) => {
-          createPhoto(answerId, photoUrl)
-            .then((result) => console.log(result.rows[0].url));
-        }))
-          .then((result) => {
-            res.status(201).end();
-          });
-      })
-      .catch((error) => {
-        console.error('Error creating answer and photos:', error);
-        res.status(500).end();
-      });
+      createAnswer(data)
+        .then((result) => {
+          var answerId = result.rows[0].id;
+          return Promise.all(photoUrls.map((photoUrl) => {
+            createPhoto(answerId, photoUrl)
+              .then((result) => console.log(result.rows[0].url));
+          }))
+            .then((result) => {
+              res.status(201).end();
+            });
+        })
+        .catch((error) => {
+          console.error('Error creating answer and photos:', error);
+          res.status(500).end();
+        });
+    }
   },
 
   putHelpfulQuestion: (req, res) => {
-    updateHelpfulQuestion(req.params.question_id)
-      .then(() => {
-        res.status(204).end();
-      })
-      .catch((error) => {
-        console.error('Error updating question helpfulness:', error);
-        res.status(500).end();
-      });
+    if (isNaN((req.params.question_id))) {
+      res.status(404).end();
+    } else {
+      updateHelpfulQuestion(req.params.question_id)
+        .then(() => {
+          res.status(204).end();
+        })
+        .catch((error) => {
+          console.error('Error updating question helpfulness:', error);
+          res.status(500).end();
+        });
+    }
   },
 
   putReportQuestion: (req, res) => {
-    updateREportQuestion(req.params.question_id)
-      .then(() => {
-        res.status(204).end();
-      })
-      .catch((error) => {
-        console.error('Error reporting question:', error);
-        res.status(500).end();
-      });
+    if (isNaN(req.params.question_id)) {
+      res.status(404).end();
+    } else {
+      updateReportQuestion(req.params.question_id)
+        .then(() => {
+          res.status(204).end();
+        })
+        .catch((error) => {
+          console.error('Error reporting question:', error);
+          res.status(500).end();
+        });
+    }
   },
 
   putHelpfulAnswer: (req, res) => {
-    updateHelpfulAnswer(req.params.answer_id)
-      .then(() => {
-        res.status(204).end();
-      })
-      .catch((error) => {
-        console.error('Error updating answer helpfulness:', error);
-        res.status(500).end();
-      });
+    if (isNaN(req.params.answer_id)) {
+      res.status(404).end();
+    } else {
+      updateHelpfulAnswer(req.params.answer_id)
+        .then(() => {
+          res.status(204).end();
+        })
+        .catch((error) => {
+          console.error('Error updating answer helpfulness:', error);
+          res.status(500).end();
+        });
+    }
   },
 
   putReportAnswer: (req, res) => {
-    updateReportAnswer(req.params.answer_id)
-      .then(() => {
-        res.status(204).end();
-      })
-      .catch((error) => {
-        console.error('Error reporting answer:', error);
-        res.status(500).end();
-      });
-
-    res.status(204).end();
+    if (isNaN(req.params.answer_id)) {
+      res.status(404).end();
+    } else {
+      updateReportAnswer(req.params.answer_id)
+        .then(() => {
+          res.status(204).end();
+        })
+        .catch((error) => {
+          console.error('Error reporting answer:', error);
+          res.status(500).end();
+        });
+    }
   }
-
 };

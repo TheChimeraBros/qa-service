@@ -65,7 +65,7 @@ module.exports = {
     return query(queryString, queryArgs);
   },
 
-  updateReportAnswer: (questionId, attributeToUpdate, value) => {
+  updateReportAnswer: (answerId) => {
     var queryString = 'UPDATE answers SET reported = true WHERE id = $1';
     var queryArgs = [answerId];
     return query(queryString, queryArgs);

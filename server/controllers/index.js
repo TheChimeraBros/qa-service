@@ -18,7 +18,6 @@ module.exports = {
         'count': limit
       };
 
-      console.log('fetching questions');
       fetchQuestions(productId, limit, offset)
         .then((data) => {
           questionsResponseObject.results = data.rows;
@@ -43,19 +42,13 @@ module.exports = {
                 console.error('Error fetching answers');
                 res.status(500).end();
               });
-          }))
-            .then((something) => console.log('something:', something))
-            .catch((error) => {
-              console.error('Errow with something, I guess:', error);
-              res.status(500).end();
-            });
+          }));
         })
-        .then((something) => {
-          console.log(something);
+        .then(() => {
           res.status(200).send(questionsResponseObject);
         })
         .catch((error) => {
-          console.error('Error fetching questions, answers, and photos:', error);
+          console.error('Error fetching questions and respective answers and photos:', error);
           res.status(500).end();
         });
     }
@@ -88,7 +81,6 @@ module.exports = {
         }));
       })
       .then(() => {
-        console.log(answersResponseObject);
         res.status(200).send(answersResponseObject);
       })
       .catch((error) => {
@@ -126,22 +118,20 @@ module.exports = {
 
       var photoUrls = req.body.photos || [];
 
-      createAnswer(data)
-        .then((result) => {
-          var answerId = result.rows[0].id;
-          return Promise.all(photoUrls.map((photoUrl) => {
-            createPhoto(answerId, photoUrl)
-              .then((result) => console.log(result.rows[0].url));
-          }))
-            .then((result) => {
-              res.status(201).end();
-            });
-        })
-        .catch((error) => {
-          console.error('Error creating answer and photos:', error);
-          res.status(500).end();
-        });
-    }
+    createAnswer(data)
+      .then((result) => {
+        var answerId = result.rows[0].id;
+        return Promise.all(photoUrls.map((photoUrl) => {
+          return createPhoto(answerId, photoUrl);
+        }));
+      })
+      .then(() => {
+        res.status(201).end();
+      })
+      .catch((error) => {
+        console.error('Error creating answer and photos:', error);
+        res.status(500).end();
+      });
   },
 
   putHelpfulQuestion: (req, res) => {

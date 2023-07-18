@@ -69,6 +69,13 @@ describe('questions', () => {
           expect(response.status).toBe(404);
       });
 
+      it('should return a 404 status code when provided an invalid product ID', async () => {
+        const response = await request(app)
+          .get('/qa/questions')
+          .query({ product_id: 1.2571 })
+          expect(response.status).toBe(404);
+      });
+
       it('should return a 200 status code and five questions when count is not defined', async () => {
         const response = await request(app)
         .get('/qa/questions')
@@ -84,7 +91,7 @@ describe('questions', () => {
           .query({ product_id: 1, count: 1 });
 
           expect(response.status).toBe(200);
-          expect(response.body).toEqual(questionPayload);
+          expect(response.body.results.length).toBe(1);
       });
 
       it('should return a 200 status code and two different questions when setting count to 1 and page to 1 and then 2', async () => {

@@ -20,6 +20,7 @@
     "lint": "eslinst ./"
   },
   "dependencies": {
+    "@aspecto/opentelemetry": "^0.0.140",
     "axios": "^1.4.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",

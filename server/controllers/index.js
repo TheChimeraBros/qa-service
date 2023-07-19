@@ -4,8 +4,7 @@ module.exports = {
 
   getQuestions: (req, res) => {
 
-    if (!req.query.product_id) {
-      console.log(req.params);
+    if (req.query.product_id === undefined || isNaN(req.query.product_id) || !Number.isInteger(Number(req.query.product_id))) {
       res.status(404).end();
     } else {
       var productId = req.query.product_id;
@@ -17,7 +16,6 @@ module.exports = {
         'page': req.query.page - 1 || 0,
         'count': limit
       };
-
       fetchQuestions(productId, limit, offset)
         .then((data) => {
           questionsResponseObject.results = data.rows;
@@ -49,7 +47,7 @@ module.exports = {
         })
         .catch((error) => {
           console.error('Error fetching questions and respective answers and photos:', error);
-          res.status(500).end();
+          res.status(500).json({ error: error });
         });
     }
   },
@@ -85,7 +83,7 @@ module.exports = {
       })
       .catch((error) => {
         console.error('Error fetching answers and photos:', error);
-        res.status(500).end();
+        res.status(500).json({ error: error });
       });
   },
 
@@ -99,7 +97,7 @@ module.exports = {
         })
         .catch((error) => {
           console.error('Error creating question:', error);
-          res.status(500).end();
+          res.status(500).json({ error: error });
         });
     }
   },
@@ -131,68 +129,68 @@ module.exports = {
         })
         .catch((error) => {
           console.error('Error creating answer and photos:', error);
-          res.status(500).end();
+          res.status(500).json({ error: error });
         });
     }
   },
 
   putHelpfulQuestion: (req, res) => {
-    if (isNaN((req.params.question_id))) {
-      res.status(404).end();
-    } else {
-      updateHelpfulQuestion(req.params.question_id)
-        .then(() => {
+    updateHelpfulQuestion(req.params.question_id)
+      .then((result) => {
+        if (result.rowCount === 1) {
           res.status(204).end();
-        })
-        .catch((error) => {
-          console.error('Error updating question helpfulness:', error);
-          res.status(500).end();
-        });
-    }
+        } else {
+          res.status(404).end();
+        }
+      })
+      .catch((error) => {
+        console.error('Error updating question helpfulness:', error);
+        res.status(500).json({ error: error });
+      });
   },
 
   putReportQuestion: (req, res) => {
-    if (isNaN(req.params.question_id)) {
-      res.status(404).end();
-    } else {
-      updateReportQuestion(req.params.question_id)
-        .then(() => {
+    updateReportQuestion(req.params.question_id)
+      .then((result) => {
+        if (result.rowCount === 1) {
           res.status(204).end();
-        })
-        .catch((error) => {
-          console.error('Error reporting question:', error);
-          res.status(500).end();
-        });
-    }
+        } else {
+          res.status(404).end();
+        }
+      })
+      .catch((error) => {
+        console.error('Error reporting question:', error);
+        res.status(500).json({ error: error });
+      });
   },
 
   putHelpfulAnswer: (req, res) => {
-    if (isNaN(req.params.answer_id)) {
-      res.status(404).end();
-    } else {
-      updateHelpfulAnswer(req.params.answer_id)
-        .then(() => {
+    updateHelpfulAnswer(req.params.answer_id)
+      .then((result) => {
+        if (result.rowCount === 1) {
           res.status(204).end();
-        })
-        .catch((error) => {
-          console.error('Error updating answer helpfulness:', error);
-          res.status(500).end();
-        });
-    }
+        } else {
+          res.status(404).end();
+        }
+      })
+      .catch((error) => {
+        console.error('Error updating answer helpfulness:', error);
+        res.status(500).json({ error: error });
+      });
   },
 
   putReportAnswer: (req, res) => {
-    if (isNaN(req.params.answer_id)) {
-      res.status(404).end();
-    } else {
-      updateReportAnswer(req.params.answer_id)
-        .then(() => {
+    updateReportAnswer(req.params.answer_id)
+      .then((result) => {
+        if (result.rowCount === 1) {
           res.status(204).end();
-        })
-        .catch((error) => {
-          console.error('Error reporting answer:', error);
-          res.status(500).end();
-        });
-    }
+        } else {
+          res.status(404).end();
+        }
+      })
+      .catch((error) => {
+        console.error('Error reporting answer:', error);
+        res.status(500).json({ error: error });
+      });
   }
 };

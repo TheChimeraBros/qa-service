@@ -3,7 +3,6 @@ const db = require('../db');
 const query = (queryString, queryArgs) => {
   return db.query(queryString, queryArgs)
     .then((res) => {
-      // console.log(res.rows);
       return res;
     })
     .catch((err) => err);

@@ -14,6 +14,10 @@ app.use(morgan(':method :url :status - :response-time ms'));
 
 app.use('/qa', routes);
 
+app.get(`/${process.env.LOADER_TOKEN}`, (req, res) => {
+  res.send(process.env.LOADER_TOKEN);
+});
+
 // Handles unknown endpoints
 app.all('*', (req, res) => {
   var status = 404;
